@@ -92,6 +92,13 @@ dpkg_list(
         "openjdk-11-jre-headless",
         "openjdk-11-jdk-headless",
 
+        #zulu
+        "zre-8",
+        "zulu-8",
+        "zre-11",
+        "zulu-11",
+        "zulu-13",
+
         #python
         "libpython2.7-minimal",
         "python2.7-minimal",
@@ -156,6 +163,7 @@ dpkg_list(
         "@debian_stretch_security//file:Packages.json",
         "@debian_stretch_backports//file:Packages.json",
         "@debian_stretch//file:Packages.json",
+        "@zulu_repo//file:Packages.json",
     ],
 )
 
@@ -292,6 +300,13 @@ dpkg_list(
         "openjdk-11-jre-headless",
         "openjdk-11-jdk-headless",
 
+        #zulu
+        "zre-8",
+        "zulu-8",
+        "zre-11",
+        "zulu-11",
+        "zulu-13",
+
         #python
         "dash",
         "libc-bin",
@@ -357,6 +372,7 @@ dpkg_list(
     sources = [
         "@debian10_security//file:Packages.json",
         "@debian10//file:Packages.json",
+        "@zulu_repo//file:Packages.json",
     ],
 )
 
@@ -365,4 +381,11 @@ dpkg_src(
     package_prefix = "https://snapshot.debian.org/archive/debian-security/20200219T150721Z/",
     packages_gz_url = "https://snapshot.debian.org/archive/debian-security/20200219T150721Z/dists/buster/updates/main/binary-amd64/Packages.gz",
     sha256 = "59e2ff24630ddb40d3b31c51890b8ae7efe861eec3f0af8f3b7fbc27d8f36dc2",
+)
+
+dpkg_src(
+    name = "zulu_repo",
+    package_prefix = "http://repos.azulsystems.com/ubuntu/",
+    packages_gz_url = "http://repos.azulsystems.com/ubuntu/dists/stable/main/binary-amd64/Packages.gz",
+    sha256 = "e936a0a80f3dfa0c12745caabdf4eaefcd6638bbfe708b0a15c58d11957348b3",
 )

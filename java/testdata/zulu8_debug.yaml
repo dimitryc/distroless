@@ -1,0 +1,29 @@
+schemaVersion: "2.0.0"
+commandTests:
+  - name: java
+    command: "/usr/lib/jvm/zulu-8-amd64/bin/java"
+    args: ["-version"]
+    expectedError: ['openjdk version "1\.8.*"']
+  - name: java-symlink
+    command: "/usr/bin/java"
+    args: ["-version"]
+    expectedError: ['openjdk version "1\.8.*"']
+  - name: javac
+    command: "/usr/lib/jvm/zulu-8-amd64/bin/javac"
+    args: ["-version"]
+    expectedError: ['javac 1\.8.*']
+fileExistenceTests:
+  - name: certs
+    path: "/usr/lib/jvm/zulu-8-amd64/jre/lib/security/cacerts"
+    shouldExist: true
+  - name: busybox
+    path: "/busybox/sh"
+    shouldExist: true
+  - name: no-shell
+    path: "/bin/sh"
+    shouldExist: false
+metadataTest:
+  entrypoint: ["/usr/bin/java", "-jar"]
+  env:
+    - key: 'JAVA_VERSION'
+      value: '8.44.0.11'

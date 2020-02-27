@@ -7,6 +7,7 @@ load("@package_bundle//file:packages.bzl", "packages", "versions")
 load("@package_bundle_debian10//file:packages.bzl", packages_debian10 = "packages", versions_debian10 = "versions")
 load("//cacerts:java.bzl", "cacerts_java")
 load("//java:jre_ver.bzl", "jre_ver")
+load("//java:jre_ver.bzl", "zulu_ver")
 
 DISTRO_SUFFIXES = ("_debian9", "_debian10")
 
@@ -99,6 +100,89 @@ cacerts_java(
     ),
 ]]
 
+[container_image(
+    name = rule_name + distro_suffix,
+    base = ("//cc:cc" if (not ("debug" in rule_name)) else "//cc:debug") + distro_suffix,
+    debs = [
+        DISTRO_PACKAGES[distro_suffix]["zlib1g"],
+        DISTRO_PACKAGES[distro_suffix]["fonts-dejavu-core"],
+        DISTRO_PACKAGES[distro_suffix]["fontconfig-config"],
+        DISTRO_PACKAGES[distro_suffix]["libexpat1"],
+        DISTRO_PACKAGES[distro_suffix]["libfontconfig1"],
+    ] + [DISTRO_PACKAGES[distro_suffix][deb] for deb in java_debs],
+    env = {
+        "JAVA_VERSION": zulu_ver(DISTRO_VERSIONS[distro_suffix][java_debs[0]]),
+    },
+    symlinks = {
+        "/usr/bin/java": java_executable_path,
+    },
+) for (distro_suffix, rule_name, java_debs, java_executable_path) in [
+    (
+        "_debian9",
+        "zulu8",
+        [
+            "zre-8",
+        ],
+        "/usr/lib/jvm/zre-8-amd64/bin/java",
+    ),
+    (
+        "_debian9",
+        "zulu8_debug",
+        [
+            "zulu-8",
+        ],
+        "/usr/lib/jvm/zulu-8-amd64/bin/java",
+    ),
+    (
+        "_debian9",
+        "zulu11",
+        [
+            "zre-11",
+        ],
+        "/usr/lib/jvm/zre-11-amd64/bin/java",
+    ),
+    (
+        "_debian9",
+        "zulu11_debug",
+        [
+            "zulu-11",
+        ],
+        "/usr/lib/jvm/zulu-11-amd64/bin/java",
+    ),
+    (
+        "_debian10",
+        "zulu11",
+        [
+            "zre-11",
+        ],
+        "/usr/lib/jvm/zre-11-amd64/bin/java",
+    ),
+    (
+        "_debian10",
+        "zulu11_debug",
+        [
+            "zulu-11",
+        ],
+        "/usr/lib/jvm/zulu-11-amd64/bin/java",
+    ),
+    (
+        "_debian9",
+        "zulu13_debug",
+        [
+            "zulu-13",
+        ],
+        "/usr/lib/jvm/zulu-13-amd64/bin/java",
+    ),
+    (
+        "_debian10",
+        "zulu13_debug",
+        [
+            "zulu-13",
+        ],
+        "/usr/lib/jvm/zulu-13-amd64/bin/java",
+    ),
+]]
+
 # Provide aliases so the default images use debian9
 alias(
     name = "java8",
@@ -118,6 +202,31 @@ alias(
 alias(
     name = "java11_debug",
     actual = ":java11_debug_debian9",
+)
+
+alias(
+    name = "zulu8",
+    actual = ":zulu8_debian9",
+)
+
+alias(
+    name = "zulu8_debug",
+    actual = ":zulu8_debug_debian9",
+)
+
+alias(
+    name = "zulu11",
+    actual = ":zulu11_debian9",
+)
+
+alias(
+    name = "zulu11_debug",
+    actual = ":zulu11_debug_debian9",
+)
+
+alias(
+    name = "zulu13_debug",
+    actual = ":zulu13_debug_debian9",
 )
 
 container_test(
@@ -142,6 +251,36 @@ container_test(
     name = "java11_debug" + distro_suffix + "_test",
     configs = ["testdata/java11_debug.yaml"],
     image = ":java11_debug" + distro_suffix,
+) for distro_suffix in DISTRO_SUFFIXES]
+
+container_test(
+    name = "zulu8_debian9_test",
+    configs = ["testdata/zulu8.yaml"],
+    image = ":zulu8_debian9",
+)
+
+container_test(
+    name = "zulu8_debug_debian9_test",
+    configs = ["testdata/zulu8_debug.yaml"],
+    image = ":zulu8_debug_debian9",
+)
+
+[container_test(
+    name = "zulu11" + distro_suffix + "_test",
+    configs = ["testdata/zulu11.yaml"],
+    image = ":zulu11" + distro_suffix,
+) for distro_suffix in DISTRO_SUFFIXES]
+
+[container_test(
+    name = "zulu11_debug" + distro_suffix + "_test",
+    configs = ["testdata/zulu11_debug.yaml"],
+    image = ":zulu11_debug" + distro_suffix,
+) for distro_suffix in DISTRO_SUFFIXES]
+
+[container_test(
+    name = "zulu13_debug" + distro_suffix + "_test",
+    configs = ["testdata/zulu13_debug.yaml"],
+    image = ":zulu13_debug" + distro_suffix,
 ) for distro_suffix in DISTRO_SUFFIXES]
 
 java_image(
